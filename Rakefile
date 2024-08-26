@@ -55,6 +55,8 @@ OBJ_FILES = SRC_FILES.pathmap("#{BUILD_DIR}/%n.o")
 
 # Clean task
 CLEAN.include(BUILD_DIR)
+CLOBBER.include(MRUBY_DIR)
+CLOBBER.include(CUTE_DIR)
 
 directory BUILD_DIR
 directory LIB_DIR
