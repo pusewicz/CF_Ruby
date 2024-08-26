@@ -93,9 +93,9 @@ task :cute => [LIB_DIR, INCLUDE_DIR] do
   Dir.chdir(CUTE_DIR) do
     unless Dir.exist?("build")
       mkdir_p "build"
-      sh "cmake -Bbuild -DCF_FRAMEWORK_BUILD_SAMPLES=OFF -DCF_FRAMEWORK_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release"
+      sh "cmake -GNinja -Bbuild -DCF_FRAMEWORK_BUILD_SAMPLES=OFF -DCF_FRAMEWORK_BUILD_TESTS=OFF"
     end
-    sh "cmake --build build --config Release"
+    sh "cmake --build build"
   end
 
   ln_sf Dir["#{CUTE_DIR}/build/*.a"], LIB_DIR
