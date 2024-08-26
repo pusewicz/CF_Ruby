@@ -8,8 +8,11 @@ MRUBY_DIR = File.expand_path("mruby")
 CUTE_DIR = File.expand_path("cute")
 SRC_DIR = File.expand_path("src")
 BUILD_DIR = File.expand_path("build")
+BIN_DIR = File.join(BUILD_DIR, "bin")
 LIB_DIR = File.join(BUILD_DIR, "lib")
 INCLUDE_DIR = File.expand_path("include")
+
+EXE_PATH = File.join(BIN_DIR, PROJECT_NAME)
 
 MRUBY_VERSION = "3.3.0"
 CUTE_VERSION = "master"
@@ -59,6 +62,7 @@ CLOBBER.include(MRUBY_DIR)
 CLOBBER.include(CUTE_DIR)
 
 directory BUILD_DIR
+directory BIN_DIR
 directory LIB_DIR
 directory INCLUDE_DIR
 
@@ -119,8 +123,8 @@ end
 task :compile => [BUILD_DIR] + OBJ_FILES
 
 # Link task
-task :link do
-  sh "#{CC} #{OBJ_FILES} #{LDFLAGS.join(' ')} #{LIBS.join(' ')} -o #{BUILD_DIR}/#{PROJECT_NAME}"
+task :link => [BIN_DIR] do
+  sh "#{CC} #{OBJ_FILES} #{LDFLAGS.join(' ')} #{LIBS.join(' ')} -o #{EXE_PATH}"
 end
 
 # Helper method to find source file for object file
@@ -130,7 +134,7 @@ end
 
 # Run task
 task :run => [:all] do
-  sh "#{BUILD_DIR}/#{PROJECT_NAME}"
+  sh EXE_PATH
 end
 
 # Install task
