@@ -12,19 +12,28 @@ LIB_DIR = File.join(BUILD_DIR, "lib")
 INCLUDE_DIR = File.expand_path("include")
 
 MRUBY_VERSION = "3.3.0"
-CUTE_VERSION = "1.0.1"
+CUTE_VERSION = "master"
 CC = ENV['CC'] || 'clang'
-CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-pedantic", "-I./include", "-Imruby/include"]
+CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-pedantic", "-I./include", "-I./include/SDL3"]
 LDFLAGS = ["-L./build/lib"]
 LIBS = %W[
   -lmruby
   -lphysfs
-  -lSDL2
+  -lSDL3
   -lobjc
   -lc++
+  -lglslang
+  -lglslang-default-resource-limits
+  -lSPIRV
+  -lSPIRV-Tools
+  -lSPIRV-Tools-opt
+  -lspirv-cross-c
+  -lspirv-cross-core
+  -lspirv-cross-glsl
+  -lspirv-cross-msl
   -Wl,-F#{LIB_DIR}
-  -Wl,-framework,cute
   -Wl,-framework,CoreVideo
+  -Wl,-framework,CoreMedia
   -Wl,-framework,Cocoa
   -Wl,-framework,IOKit
   -Wl,-framework,ForceFeedback
@@ -33,10 +42,12 @@ LIBS = %W[
   -Wl,-framework,AudioToolbox
   -Wl,-framework,AVFoundation
   -Wl,-framework,Foundation
+  -Wl,-framework,UniformTypeIdentifiers
   -Wl,-weak_framework,GameController
   -Wl,-weak_framework,Metal
   -Wl,-weak_framework,QuartzCore
   -Wl,-weak_framework,CoreHaptics
+  -Wl,-framework,cute
 ]
 # Source and object files
 SRC_FILES = FileList["#{SRC_DIR}/**/*.c"]
@@ -68,6 +79,7 @@ task :mruby => [LIB_DIR, INCLUDE_DIR] do
   end
 
   ln_sf Dir["#{MRUBY_DIR}/build/host/lib/*.a"], LIB_DIR
+  ln_sf Dir["#{MRUBY_DIR}/include/*"], INCLUDE_DIR
 end
 
 task :cute => [LIB_DIR, INCLUDE_DIR] do
@@ -81,15 +93,19 @@ task :cute => [LIB_DIR, INCLUDE_DIR] do
   Dir.chdir(CUTE_DIR) do
     unless Dir.exist?("build")
       mkdir_p "build"
-      sh "cmake -Bbuild -DCF_FRAMEWORK_BUILD_SAMPLES=OFF -DCF_FRAMEWORK_BUILD_TESTS=OFF"
+      sh "cmake -Bbuild -DCF_FRAMEWORK_BUILD_SAMPLES=OFF -DCF_FRAMEWORK_BUILD_TESTS=OFF -DCMAKE_BUILD_TYPE=Release"
     end
-
-    sh "cmake --build build"
+    sh "cmake --build build --config Release"
   end
 
   ln_sf Dir["#{CUTE_DIR}/build/*.a"], LIB_DIR
   ln_sf Dir["#{CUTE_DIR}/build/cute.framework"], LIB_DIR
-  ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl2-build/*.a"], LIB_DIR
+  ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/*.a"], LIB_DIR
+  ln_sf Dir["#{CUTE_DIR}/build/_deps/spirv_cross-build/*.a"], LIB_DIR
+  ln_sf Dir["#{CUTE_DIR}/include/*"], INCLUDE_DIR
+  ln_sf Dir["#{CUTE_DIR}/libraries/*"], INCLUDE_DIR
+  ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include/*"], INCLUDE_DIR
+  ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include-config-release/SDL3/*"], INCLUDE_DIR + "/SDL3"
 end
 
 # Compile task
