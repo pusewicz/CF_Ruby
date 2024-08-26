@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <sys/_types/_null.h>
 #include "mruby.h"
 #include "cute.h"
 
