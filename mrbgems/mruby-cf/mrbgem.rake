@@ -10,19 +10,27 @@ MRuby::Gem::Specification.new("mruby-cf") do |spec|
   cc.include_paths << File.expand_path("../cute/libraries")
   cc.include_paths << File.expand_path("../cute/build/_deps/sdl2-build/include/SDL2")
   cc.include_paths << File.expand_path("../cute/build/_deps/sdl2-src/include")
-  # cxx.include_paths << File.expand_path("../gosu/ffi")
-  # cc.defines.push("GOSU_FFI_EXPORTS", "GOSU_DEPRECATED=")
-  # cxx.defines.push("GOSU_FFI_EXPORTS", "GOSU_DEPRECATED=")
-  # cc.flags << "/std:c++11"
-  # cxx.flags << "/std:c++11"
 
-  cc.flags << `#{sdl2_config} --cflags`.strip
+  linker.flags << %W[
+    -Wl,-F#{File.expand_path('../build/lib')}
+    -Wl,-framework,cute
+    -Wl,-framework,CoreVideo
+    -Wl,-framework,Cocoa
+    -Wl,-framework,IOKit
+    -Wl,-framework,ForceFeedback
+    -Wl,-framework,Carbon
+    -Wl,-framework,CoreAudio
+    -Wl,-framework,AudioToolbox
+    -Wl,-framework,AVFoundation
+    -Wl,-framework,Foundation
+    -Wl,-weak_framework,GameController
+    -Wl,-weak_framework,Metal
+    -Wl,-weak_framework,QuartzCore
+    -Wl,-weak_framework,CoreHaptics
+  ]
 
-  # Set Cocoa framework for Mac OS X
-  linker.flags << `#{sdl2_config} --static-libs`.strip
   linker.library_paths << File.expand_path("../build/lib")
-  linker.libraries.push("cute")
   linker.libraries.push("physfs")
   linker.libraries.push("c++")
-  # linker.libraries.push("SDL2")
+  linker.libraries.push("SDL2")
 end
