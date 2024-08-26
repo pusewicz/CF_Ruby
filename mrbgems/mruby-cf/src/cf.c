@@ -1,5 +1,8 @@
 #include "mruby.h"
 #include "cute.h"
+#include "sprite.h"
+
+struct RClass* mrb_cute_sprite;
 
 static mrb_value mrb_cf_display_count(mrb_state *mrb, mrb_value self) {
   return mrb_fixnum_value(cf_display_count());
@@ -51,6 +54,7 @@ void mrb_mruby_cf_gem_init(mrb_state *mrb) {
   struct RClass *mrb_cute = mrb_define_module(mrb, "Cute");
 
   mrb_cf_init(mrb, mrb_cute);
+  mrb_cute_sprite_init(mrb, mrb_cute);
 }
 
 void mrb_mruby_cf_gem_final(mrb_state *mrb) {}
