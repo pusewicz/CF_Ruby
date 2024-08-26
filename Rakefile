@@ -16,8 +16,12 @@ CUTE_VERSION = "1.0.1"
 CC = ENV['CC'] || 'clang'
 CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-pedantic", "-I./include", "-Imruby/include"]
 LDFLAGS = ["-L./build/lib"]
-LIBS = ["-lmruby", "-lphysfs", "-lSDL2", "-lobjc", "-lc++"]
-FRAMEWORKS = %W[
+LIBS = %W[
+  -lmruby
+  -lphysfs
+  -lSDL2
+  -lobjc
+  -lc++
   -Wl,-F#{LIB_DIR}
   -Wl,-framework,cute
   -Wl,-framework,CoreVideo
@@ -34,7 +38,6 @@ FRAMEWORKS = %W[
   -Wl,-weak_framework,QuartzCore
   -Wl,-weak_framework,CoreHaptics
 ]
-
 # Source and object files
 SRC_FILES = FileList["#{SRC_DIR}/**/*.c"]
 OBJ_FILES = SRC_FILES.pathmap("#{BUILD_DIR}/%n.o")
@@ -99,7 +102,7 @@ task :compile => [BUILD_DIR] + OBJ_FILES
 
 # Link task
 task :link do
-  sh "#{CC} #{OBJ_FILES} #{LDFLAGS.join(' ')} #{LIBS.join(' ')} #{FRAMEWORKS.join(' ')} -o #{BUILD_DIR}/#{PROJECT_NAME}"
+  sh "#{CC} #{OBJ_FILES} #{LDFLAGS.join(' ')} #{LIBS.join(' ')} -o #{BUILD_DIR}/#{PROJECT_NAME}"
 end
 
 # Helper method to find source file for object file
