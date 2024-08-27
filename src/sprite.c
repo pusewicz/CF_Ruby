@@ -22,8 +22,8 @@ static struct mrb_data_type const mrb_cute_sprite_data_type = {
 
 // void cf_draw_sprite(const CF_Sprite* sprite);
 static mrb_value mrb_cute_sprite_draw(mrb_state *mrb, mrb_value self) {
-  mrb_cute_sprite_data_t *data = (mrb_cute_sprite_data_t *)mrb_data_get_ptr(
-      mrb, self, &mrb_cute_sprite_data_type);
+  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
+      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
   if (data == NULL) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
   }
@@ -41,8 +41,8 @@ static mrb_value mrb_cute_sprite_play(mrb_state *mrb, mrb_value self) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "missing animation name");
   }
 
-  mrb_cute_sprite_data_t *data = (mrb_cute_sprite_data_t *)mrb_data_get_ptr(
-      mrb, self, &mrb_cute_sprite_data_type);
+  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
+      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
   if (data == NULL) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
   }
@@ -60,8 +60,8 @@ static mrb_value mrb_cute_sprite_is_playing(mrb_state *mrb, mrb_value self) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "missing animation name");
   }
 
-  mrb_cute_sprite_data_t *data = (mrb_cute_sprite_data_t *)mrb_data_get_ptr(
-      mrb, self, &mrb_cute_sprite_data_type);
+  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
+      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
   if (data == NULL) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
   }
@@ -71,8 +71,8 @@ static mrb_value mrb_cute_sprite_is_playing(mrb_state *mrb, mrb_value self) {
 
 // void cf_sprite_update(CF_Sprite* sprite)
 static mrb_value mrb_cute_sprite_update(mrb_state *mrb, mrb_value self) {
-  mrb_cute_sprite_data_t *data = (mrb_cute_sprite_data_t *)mrb_data_get_ptr(
-      mrb, self, &mrb_cute_sprite_data_type);
+  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
+      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
   if (data == NULL) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
   }
