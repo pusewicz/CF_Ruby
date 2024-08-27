@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Error: Could not initialize MRuby\n");
     return 1;
   }
-  mrb_cute_init(mrb);
+  mrb_cute_define(mrb);
 
   // TODO: Get data from some config file
   char title[256];

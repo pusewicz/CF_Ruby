@@ -43,7 +43,7 @@ static mrb_value mrb_cute_app_draw_onto_screen(mrb_state *mrb, mrb_value self) {
   return mrb_fixnum_value(cf_app_draw_onto_screen(clear));
 }
 
-void mrb_cute_init(mrb_state *mrb) {
+void mrb_cute_define(mrb_state *mrb) {
   struct RClass *mrb_cute = mrb_define_module(mrb, "Cute");
 
   mrb_define_module_function(mrb, mrb_cute, "display_count",
@@ -58,5 +58,5 @@ void mrb_cute_init(mrb_state *mrb) {
                              MRB_ARGS_NONE());
   mrb_define_module_function(mrb, mrb_cute, "app_draw_onto_screen",
                              mrb_cute_app_draw_onto_screen, MRB_ARGS_REQ(1));
-  mrb_cute_sprite_init(mrb, mrb_cute);
+  mrb_cute_sprite_define(mrb, mrb_cute);
 }

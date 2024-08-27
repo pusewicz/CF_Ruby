@@ -4,6 +4,7 @@
 // - check
 // https://github.com/mruby/mruby/blob/master/mrbgems/mruby-time/src/time.c#L565
 // and https://dev.to/roryo/storing-c-data-in-an-mruby-class-50k4
+// - extract data initialization to a separate function
 
 typedef struct mrb_cute_sprite_data_t {
   CF_Sprite *sprite;
@@ -92,7 +93,7 @@ static mrb_value mrb_cute_sprite_make_demo_sprite(mrb_state *mrb,
   return self;
 }
 
-void mrb_cute_sprite_init(mrb_state *mrb, struct RClass *mrb_cute) {
+void mrb_cute_sprite_define(mrb_state *mrb, struct RClass *mrb_cute) {
   struct RClass *mrb_cute_sprite =
       mrb_define_class_under(mrb, mrb_cute, "Sprite", mrb->object_class);
   ;

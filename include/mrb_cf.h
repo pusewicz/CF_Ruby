@@ -2,4 +2,4 @@
 #include <cute.h>
 #include "mrb_cf_sprite.h"
 
-void mrb_cute_init(mrb_state *mrb);
+void mrb_cute_define(mrb_state *mrb);
