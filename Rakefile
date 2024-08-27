@@ -118,9 +118,3 @@ task :run => [:all] do
     sh EXE_PATH
   end
 end
-
-# Install task
-task :install => [:all] do
-  mkdir_p "/usr/local/bin"
-  cp "#{BUILD_DIR}/#{PROJECT_NAME}", "/usr/local/bin/"
-end
