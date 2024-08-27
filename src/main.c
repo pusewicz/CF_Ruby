@@ -5,7 +5,9 @@
 
 int main(int argc, char **argv) {
   mrb_state *mrb = mrb_open();
-  if (!mrb) { /* handle error */
+  if (!mrb) {
+    fprintf(stderr, "Error: Could not initialize MRuby\n");
+    return 1;
   }
 
   // Get data from JSON
