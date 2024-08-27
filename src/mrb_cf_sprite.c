@@ -15,12 +15,17 @@ static struct mrb_data_type const mrb_cute_sprite_data_type = {
     mrb_free,
 };
 
-static mrb_value mrb_cute_sprite_draw(mrb_state *mrb, mrb_value self) {
+static mrb_cute_sprite_data_t *s_data_get_ptr(mrb_state *mrb, mrb_value self) {
   mrb_cute_sprite_data_t *data = DATA_GET_PTR(
       mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
   if (data == NULL) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
   }
+  return data;
+}
+
+static mrb_value mrb_cute_sprite_draw(mrb_state *mrb, mrb_value self) {
+  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
 
   cf_draw_sprite(data->sprite);
 
@@ -34,11 +39,7 @@ static mrb_value mrb_cute_sprite_play(mrb_state *mrb, mrb_value self) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "missing animation name");
   }
 
-  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
-      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
-  if (data == NULL) {
-    mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
-  }
+  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
 
   cf_sprite_play(data->sprite, animation);
 
@@ -52,21 +53,13 @@ static mrb_value mrb_cute_sprite_is_playing(mrb_state *mrb, mrb_value self) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "missing animation name");
   }
 
-  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
-      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
-  if (data == NULL) {
-    mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
-  }
+  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
 
   return mrb_bool_value(cf_sprite_is_playing(data->sprite, animation));
 }
 
 static mrb_value mrb_cute_sprite_update(mrb_state *mrb, mrb_value self) {
-  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
-      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
-  if (data == NULL) {
-    mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
-  }
+  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
 
   cf_sprite_update(data->sprite);
 
