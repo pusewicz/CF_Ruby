@@ -83,5 +83,6 @@ int main(int argc, char **argv) {
   }
 
   mrb_close(mrb);
+  cf_destroy_app();
   return 0;
 }
