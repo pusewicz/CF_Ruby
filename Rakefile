@@ -14,7 +14,7 @@ EXE_PATH = File.join(BIN_DIR, PROJECT_NAME)
 
 CUTE_VERSION = "master"
 CC = ENV['CC'] || 'clang'
-CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-pedantic", "-I./include", "-I./cute/include", "-I./cute/libraries", "-I./cute/build/_deps/sdl3-build/include/SDL3", "-I./cute/build/_deps/sdl3-src/include"]
+CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-I./include", "-I./cute/include", "-I./cute/libraries", "-I./cute/build/_deps/sdl3-build/include/SDL3", "-I./cute/build/_deps/sdl3-src/include"]
 LDFLAGS = ["-L./cute/build", "-L./cute/build/_deps/sdl3-build", "-L./cute/build/_deps/spirv_cross-build"]
 LIBS = %W[
   -lmruby
