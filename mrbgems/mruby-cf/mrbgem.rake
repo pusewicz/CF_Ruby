@@ -1,6 +1,4 @@
 MRuby::Gem::Specification.new("mruby-cf") do |spec|
-  sdl2_config = File.expand_path('../build/lib/sdl2-config')
-
   spec.license = "Zlib"
   spec.authors = "pusewicz"
   spec.summary = "mruby bindings for the Cute Framework game library"
