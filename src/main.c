@@ -6,15 +6,48 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+mrb_state *mrb;
+
+void update() {
+  mrb_funcall(mrb, mrb_top_self(mrb), "update", 0);
+  if (mrb->exc) {
+    mrb_print_error(mrb);
+    mrb->exc = 0;
+  }
+}
+
+void load_main_rb() {
+  const char *filename = "main.rb";
+  FILE *f = fopen(filename, "r");
+  if (!f) {
+    fprintf(stderr, "Error: Could not open %s\n", filename);
+    return;
+  }
+
+  mrb_load_file(mrb, f);
+  fclose(f);
+
+  if (mrb->exc) {
+    mrb_print_error(mrb);
+    mrb->exc = 0;
+  }
+
+  // Check if init function exists
+  /* if (mrb_func_basic_p(mrb, mrb_top_self(mrb), mrb_intern_lit(mrb, "init")))
+   * { */
+  /*   mrb_funcall(mrb, mrb_top_self(mrb), "init", 0); */
+  /* } */
+}
+
 int main(int argc, char **argv) {
-  mrb_state *mrb = mrb_open();
+  mrb = mrb_open();
   if (!mrb) {
     fprintf(stderr, "Error: Could not initialize MRuby\n");
     return 1;
   }
   mrb_mruby_cf_gem_init(mrb);
 
-  // Get data from JSON
+  // TODO: Get data from some config file
   char title[256];
   snprintf(title, sizeof(title), "CF_Ruby (MRuby/%s Cute/%s)", MRUBY_VERSION,
            cf_version_string_linked());
@@ -46,13 +79,7 @@ int main(int argc, char **argv) {
   cf_set_target_framerate(60);
 
   while (cf_app_is_running()) {
-    cf_app_update(NULL);
-    mrb_funcall(mrb, mrb_top_self(mrb), "update", 0);
-    if (mrb->exc) {
-      mrb_print_error(mrb);
-      mrb->exc = 0;
-    }
-
+    cf_app_update(update);
     cf_app_draw_onto_screen(true);
   }
 
