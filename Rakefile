@@ -134,7 +134,10 @@ end
 
 # Run task
 task :run => [:all] do
-  sh EXE_PATH
+  cp "#{SRC_DIR}/main.rb", BUILD_DIR
+  Dir.chdir(BUILD_DIR) do
+    sh EXE_PATH
+  end
 end
 
 # Install task
