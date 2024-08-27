@@ -9,15 +9,13 @@ CUTE_DIR = File.expand_path("cute")
 SRC_DIR = File.expand_path("src")
 BUILD_DIR = File.expand_path("build")
 BIN_DIR = File.join(BUILD_DIR, "bin")
-LIB_DIR = File.join(BUILD_DIR, "lib")
-INCLUDE_DIR = File.expand_path("include")
 
 EXE_PATH = File.join(BIN_DIR, PROJECT_NAME)
 
 CUTE_VERSION = "master"
 CC = ENV['CC'] || 'clang'
 CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-pedantic", "-I./include", "-I./cute/include", "-I./cute/libraries", "-I./cute/build/_deps/sdl3-build/include/SDL3", "-I./cute/build/_deps/sdl3-src/include"]
-LDFLAGS = ["-L./build/lib"]
+LDFLAGS = ["-L./cute/build", "-L./cute/build/_deps/sdl3-build", "-L./cute/build/_deps/spirv_cross-build"]
 LIBS = %W[
   -lmruby
   -lphysfs
@@ -33,7 +31,7 @@ LIBS = %W[
   -lspirv-cross-core
   -lspirv-cross-glsl
   -lspirv-cross-msl
-  -Wl,-F#{LIB_DIR}
+  -Wl,-F./cute/build
   -Wl,-framework,CoreVideo
   -Wl,-framework,CoreMedia
   -Wl,-framework,Cocoa
@@ -62,8 +60,6 @@ CLOBBER.include(CUTE_DIR)
 
 directory BUILD_DIR
 directory BIN_DIR
-directory LIB_DIR
-directory INCLUDE_DIR
 
 # Default task
 task :default => [:all]
@@ -71,7 +67,7 @@ task :default => [:all]
 # Build task
 task :all => [:cute, :compile, :link]
 
-task :cute => [LIB_DIR, INCLUDE_DIR] do
+task :cute do
   unless Dir.exist?(CUTE_DIR)
     sh "git clone --depth 1 --single-branch --branch #{CUTE_VERSION} https://github.com/RandyGaul/cute_framework.git #{CUTE_DIR}"
   end
@@ -86,15 +82,6 @@ task :cute => [LIB_DIR, INCLUDE_DIR] do
     end
     sh "cmake --build build"
   end
-
-  ln_sf Dir["#{CUTE_DIR}/build/*.a"], LIB_DIR
-  ln_sf Dir["#{CUTE_DIR}/build/cute.framework"], LIB_DIR
-  ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/*.a"], LIB_DIR
-  ln_sf Dir["#{CUTE_DIR}/build/_deps/spirv_cross-build/*.a"], LIB_DIR
-  # ln_sf Dir["#{CUTE_DIR}/include/*"], INCLUDE_DIR
-  # ln_sf Dir["#{CUTE_DIR}/libraries/*"], INCLUDE_DIR
-  # ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include/*"], INCLUDE_DIR
-  # ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include-config-release/SDL3/*"], INCLUDE_DIR + "/SDL3"
 end
 
 # Compile task
