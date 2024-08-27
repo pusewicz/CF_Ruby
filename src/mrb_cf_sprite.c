@@ -1,7 +1,6 @@
-#include "sprite.h"
+#include "mrb_cf_sprite.h"
 
 // TODO:
-// - double check the DATA_PTR use, rather than the mrb_data_get_ptr
 // - check
 // https://github.com/mruby/mruby/blob/master/mrbgems/mruby-time/src/time.c#L565
 // and https://dev.to/roryo/storing-c-data-in-an-mruby-class-50k4
@@ -20,7 +19,6 @@ static struct mrb_data_type const mrb_cute_sprite_data_type = {
     mrb_cute_sprite_data_free,
 };
 
-// void cf_draw_sprite(const CF_Sprite* sprite);
 static mrb_value mrb_cute_sprite_draw(mrb_state *mrb, mrb_value self) {
   mrb_cute_sprite_data_t *data = DATA_GET_PTR(
       mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
@@ -33,7 +31,6 @@ static mrb_value mrb_cute_sprite_draw(mrb_state *mrb, mrb_value self) {
   return self;
 }
 
-// bool cf_sprite_play(CF_Sprite* sprite, const char* animation)
 static mrb_value mrb_cute_sprite_play(mrb_state *mrb, mrb_value self) {
   const char *animation = NULL;
   mrb_get_args(mrb, "z", &animation);
@@ -52,7 +49,6 @@ static mrb_value mrb_cute_sprite_play(mrb_state *mrb, mrb_value self) {
   return self;
 }
 
-// bool cf_sprite_is_playing(CF_Sprite* sprite, const char* animation)
 static mrb_value mrb_cute_sprite_is_playing(mrb_state *mrb, mrb_value self) {
   const char *animation = NULL;
   mrb_get_args(mrb, "z", &animation);
@@ -69,7 +65,6 @@ static mrb_value mrb_cute_sprite_is_playing(mrb_state *mrb, mrb_value self) {
   return mrb_bool_value(cf_sprite_is_playing(data->sprite, animation));
 }
 
-// void cf_sprite_update(CF_Sprite* sprite)
 static mrb_value mrb_cute_sprite_update(mrb_state *mrb, mrb_value self) {
   mrb_cute_sprite_data_t *data = DATA_GET_PTR(
       mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
@@ -123,5 +118,3 @@ void mrb_cute_sprite_init(mrb_state *mrb, struct RClass *mrb_cute) {
   mrb_define_method(mrb, mrb_cute_sprite, "update", mrb_cute_sprite_update,
                     MRB_ARGS_NONE());
 }
-
-void mrb_cute_sprite_free(mrb_state *mrb, mrb_value self) {}

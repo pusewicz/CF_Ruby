@@ -1,10 +1,9 @@
-#include "cf.h"
-#include "sprite.h"
+#include "mrb_cf.h"
+#include "mrb_cf_sprite.h"
 #include <cute.h>
 #include <mruby.h>
 #include <mruby/compile.h>
 #include <stdio.h>
-#include <sys/stat.h>
 
 mrb_state *mrb;
 
@@ -45,7 +44,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Error: Could not initialize MRuby\n");
     return 1;
   }
-  mrb_mruby_cf_gem_init(mrb);
+  mrb_cute_init(mrb);
 
   // TODO: Get data from some config file
   char title[256];
