@@ -4,45 +4,21 @@
 #include <mruby.h>
 #include <mruby/compile.h>
 #include <stdio.h>
+#include <unistd.h>
+
+#define MAIN_RB "main.rb"
 
 mrb_state *mrb;
 
-void update() {
-  mrb_funcall(mrb, mrb_top_self(mrb), "update", 0);
-  if (mrb->exc) {
-    mrb_print_error(mrb);
-    mrb->exc = 0;
-  }
-}
-
-void load_main_rb() {
-  const char *filename = "main.rb";
-  FILE *f = fopen(filename, "r");
-  if (!f) {
-    fprintf(stderr, "Error: Could not open %s\n", filename);
-    return;
-  }
-
-  mrb_load_file(mrb, f);
-  fclose(f);
-
-  if (mrb->exc) {
-    mrb_print_error(mrb);
-    mrb->exc = 0;
-  }
-
-  // Check if init function exists
-  /* if (mrb_func_basic_p(mrb, mrb_top_self(mrb), mrb_intern_lit(mrb, "init")))
-   * { */
-  /*   mrb_funcall(mrb, mrb_top_self(mrb), "init", 0); */
-  /* } */
-}
+static void s_update(void *);
+static void s_load_main_rb(void);
 
 int main(int argc, char **argv) {
+  CF_UNUSED(argc);
   mrb = mrb_open();
   if (!mrb) {
     fprintf(stderr, "Error: Could not initialize MRuby\n");
-    return 1;
+    return EXIT_FAILURE;
   }
   mrb_cute_define(mrb);
 
@@ -56,13 +32,35 @@ int main(int argc, char **argv) {
   int options =
       CF_APP_OPTIONS_WINDOW_POS_CENTERED_BIT | CF_APP_OPTIONS_RESIZABLE_BIT;
 
-  // Load and execute your Ruby game script
-  const char *filename = "main.rb";
-  FILE *f = fopen(filename, "r");
+  s_load_main_rb();
+  cf_make_app(title, display_index, 0, 0, width, height, options, argv[0]);
+  cf_set_fixed_timestep(60);
+  cf_set_target_framerate(60);
+
+  while (cf_app_is_running()) {
+    cf_app_update(s_update);
+    cf_app_draw_onto_screen(true);
+  }
+
+  mrb_close(mrb);
+  cf_destroy_app();
+  return EXIT_SUCCESS;
+}
+
+static void s_update(void *data) {
+  CF_UNUSED(data);
+  mrb_funcall(mrb, mrb_top_self(mrb), "update", 0);
+  if (mrb->exc) {
+    mrb_print_error(mrb);
+    mrb->exc = 0;
+  }
+}
+
+static void s_load_main_rb(void) {
+  FILE *f = fopen(MAIN_RB, "r");
   if (!f) {
-    fprintf(stderr, "Error: Could not open %s\n", filename);
-    mrb_close(mrb);
-    return 1;
+    fprintf(stderr, "Error: Could not open %s\n", MAIN_RB);
+    exit(EXIT_FAILURE);
   }
 
   mrb_load_file(mrb, f);
@@ -72,17 +70,4 @@ int main(int argc, char **argv) {
     mrb_print_error(mrb);
     mrb->exc = 0;
   }
-
-  cf_make_app(title, display_index, 0, 0, width, height, options, argv[0]);
-  cf_set_fixed_timestep(60);
-  cf_set_target_framerate(60);
-
-  while (cf_app_is_running()) {
-    cf_app_update(update);
-    cf_app_draw_onto_screen(true);
-  }
-
-  mrb_close(mrb);
-  cf_destroy_app();
-  return 0;
 }
