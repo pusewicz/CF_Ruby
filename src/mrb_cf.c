@@ -1,7 +1,5 @@
 #include "mrb_cf.h"
 
-struct RClass *mrb_cute_sprite_class;
-
 static mrb_value mrb_cute_display_count(mrb_state *mrb, mrb_value self) {
   CF_UNUSED(mrb);
   CF_UNUSED(self);
