@@ -6,28 +6,24 @@
 // and https://dev.to/roryo/storing-c-data-in-an-mruby-class-50k4
 // - extract data initialization to a separate function
 
-typedef struct mrb_cute_sprite_data_t {
-  CF_Sprite *sprite;
-} mrb_cute_sprite_data_t;
-
 static struct mrb_data_type const mrb_cute_sprite_data_type = {
     "Sprite",
     mrb_free,
 };
 
-static mrb_cute_sprite_data_t *s_data_get_ptr(mrb_state *mrb, mrb_value self) {
-  mrb_cute_sprite_data_t *data = DATA_GET_PTR(
-      mrb, self, &mrb_cute_sprite_data_type, mrb_cute_sprite_data_t);
-  if (data == NULL) {
+static CF_Sprite *s_data_get_ptr(mrb_state *mrb, mrb_value self) {
+  CF_Sprite *sprite_ptr =
+      DATA_GET_PTR(mrb, self, &mrb_cute_sprite_data_type, CF_Sprite);
+  if (sprite_ptr == NULL) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "uninitialized data");
   }
-  return data;
+  return sprite_ptr;
 }
 
 static mrb_value mrb_cute_sprite_draw(mrb_state *mrb, mrb_value self) {
-  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
+  CF_Sprite *sprite_ptr = s_data_get_ptr(mrb, self);
 
-  cf_draw_sprite(data->sprite);
+  cf_draw_sprite(sprite_ptr);
 
   return self;
 }
@@ -39,9 +35,9 @@ static mrb_value mrb_cute_sprite_play(mrb_state *mrb, mrb_value self) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "missing animation name");
   }
 
-  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
+  CF_Sprite *sprite_ptr = s_data_get_ptr(mrb, self);
 
-  cf_sprite_play(data->sprite, animation);
+  cf_sprite_play(sprite_ptr, animation);
 
   return self;
 }
@@ -53,15 +49,15 @@ static mrb_value mrb_cute_sprite_is_playing(mrb_state *mrb, mrb_value self) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "missing animation name");
   }
 
-  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
+  CF_Sprite *sprite_ptr = s_data_get_ptr(mrb, self);
 
-  return mrb_bool_value(cf_sprite_is_playing(data->sprite, animation));
+  return mrb_bool_value(cf_sprite_is_playing(sprite_ptr, animation));
 }
 
 static mrb_value mrb_cute_sprite_update(mrb_state *mrb, mrb_value self) {
-  mrb_cute_sprite_data_t *data = s_data_get_ptr(mrb, self);
+  CF_Sprite *sprite_ptr = s_data_get_ptr(mrb, self);
 
-  cf_sprite_update(data->sprite);
+  cf_sprite_update(sprite_ptr);
 
   return self;
 }
@@ -69,19 +65,19 @@ static mrb_value mrb_cute_sprite_update(mrb_state *mrb, mrb_value self) {
 static mrb_value mrb_cute_sprite_make_demo_sprite(mrb_state *mrb,
                                                   mrb_value self) {
   // TODO: https://github.com/mruby/mruby/issues/9#issuecomment-147070792
-  mrb_cute_sprite_data_t *data = (mrb_cute_sprite_data_t *)DATA_PTR(self);
+  CF_Sprite *sprite_ptr = (CF_Sprite *)DATA_PTR(self);
 
-  if (data) {
-    mrb_free(mrb, data);
+  if (sprite_ptr) {
+    mrb_free(mrb, sprite_ptr);
   }
   mrb_data_init(self, NULL, &mrb_cute_sprite_data_type);
 
   CF_Sprite *sprite = (CF_Sprite *)cf_alloc(sizeof(CF_Sprite));
   *sprite = cf_make_demo_sprite();
-  data = mrb_malloc(mrb, sizeof(*data));
-  data->sprite = sprite;
+  sprite_ptr = mrb_malloc(mrb, sizeof(*sprite_ptr));
+  sprite_ptr = sprite;
 
-  mrb_data_init(self, data, &mrb_cute_sprite_data_type);
+  mrb_data_init(self, sprite_ptr, &mrb_cute_sprite_data_type);
 
   return self;
 }
