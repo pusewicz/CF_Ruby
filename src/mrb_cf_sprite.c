@@ -76,19 +76,19 @@ static mrb_value mrb_cute_sprite_update(mrb_state *mrb, mrb_value self) {
 static mrb_value mrb_cute_sprite_make_demo_sprite(mrb_state *mrb,
                                                   mrb_value self) {
   // TODO: https://github.com/mruby/mruby/issues/9#issuecomment-147070792
-  mrb_cute_sprite_data_t *data =
-      (mrb_cute_sprite_data_t *)mrb_malloc(mrb, sizeof(mrb_cute_sprite_data_t));
+  mrb_cute_sprite_data_t *data = (mrb_cute_sprite_data_t *)DATA_PTR(self);
 
-  CF_Sprite *sprite = malloc(sizeof(CF_Sprite));
+  if (data) {
+    mrb_free(mrb, data);
+  }
+  mrb_data_init(self, NULL, &mrb_cute_sprite_data_type);
+
+  CF_Sprite *sprite = (CF_Sprite *)cf_alloc(sizeof(CF_Sprite));
   *sprite = cf_make_demo_sprite();
+  data = mrb_malloc(mrb, sizeof(*data));
   data->sprite = sprite;
 
-  DATA_PTR(self) = data;
-  DATA_TYPE(self) = &mrb_cute_sprite_data_type;
-
-  // initialize the Sprite object
-  // TODO:
-  // https://github.com/mruby/mruby/blob/master/mrbgems/mruby-time/src/time.c
+  mrb_data_init(self, data, &mrb_cute_sprite_data_type);
 
   return self;
 }
