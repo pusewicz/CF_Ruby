@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
     mrb->exc = 0;
   }
 
-  cf_make_app(title, 0, 0, 0, width, height, options, argv[0]);
+  cf_make_app(title, display_index, 0, 0, width, height, options, argv[0]);
   cf_set_fixed_timestep(60);
   cf_set_target_framerate(60);
 
