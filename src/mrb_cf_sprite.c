@@ -9,14 +9,9 @@ typedef struct mrb_cute_sprite_data_t {
   CF_Sprite *sprite;
 } mrb_cute_sprite_data_t;
 
-static void mrb_cute_sprite_data_free(mrb_state *mrb, void *ptr) {
-  // TODO: Do I need to free the sprite?
-  mrb_free(mrb, ptr);
-}
-
 static struct mrb_data_type const mrb_cute_sprite_data_type = {
     "Sprite",
-    mrb_cute_sprite_data_free,
+    mrb_free,
 };
 
 static mrb_value mrb_cute_sprite_draw(mrb_state *mrb, mrb_value self) {
