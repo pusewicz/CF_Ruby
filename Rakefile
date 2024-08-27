@@ -5,7 +5,6 @@ require 'json'
 PROJECT_NAME = "cf_ruby"
 
 # Directory structure
-MRUBY_DIR = File.expand_path("mruby")
 CUTE_DIR = File.expand_path("cute")
 SRC_DIR = File.expand_path("src")
 BUILD_DIR = File.expand_path("build")
@@ -15,10 +14,9 @@ INCLUDE_DIR = File.expand_path("include")
 
 EXE_PATH = File.join(BIN_DIR, PROJECT_NAME)
 
-MRUBY_VERSION = "3.3.0"
 CUTE_VERSION = "master"
 CC = ENV['CC'] || 'clang'
-CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-pedantic", "-I./include", "-I./include/SDL3"]
+CFLAGS = ["-std=c17", "-Wall", "-Wextra", "-pedantic", "-I./include", "-I./cute/include", "-I./cute/libraries", "-I./cute/build/_deps/sdl3-build/include/SDL3", "-I./cute/build/_deps/sdl3-src/include"]
 LDFLAGS = ["-L./build/lib"]
 LIBS = %W[
   -lmruby
@@ -60,7 +58,6 @@ COMPILE_COMMANDS_FILE = File.join(BUILD_DIR, "compile_commands.json")
 
 # Clean task
 CLEAN.include(BUILD_DIR)
-CLOBBER.include(MRUBY_DIR)
 CLOBBER.include(CUTE_DIR)
 
 directory BUILD_DIR
@@ -72,23 +69,7 @@ directory INCLUDE_DIR
 task :default => [:all]
 
 # Build task
-task :all => [:cute, :mruby, :compile, :link]
-
-# MRuby tasks
-task :mruby => [LIB_DIR, INCLUDE_DIR] do
-  unless Dir.exist?(MRUBY_DIR)
-    sh "git clone --depth 1 --single-branch --branch #{MRUBY_VERSION} https://github.com/mruby/mruby.git #{MRUBY_DIR}"
-  end
-
-  ln_sf File.expand_path("build_config.rb"), MRUBY_DIR + "/build_config/cf_ruby.rb"
-
-  Dir.chdir(MRUBY_DIR) do
-    sh "rake", "MRUBY_CONFIG=cf_ruby"
-  end
-
-  ln_sf Dir["#{MRUBY_DIR}/build/host/lib/*.a"], LIB_DIR
-  ln_sf Dir["#{MRUBY_DIR}/include/*"], INCLUDE_DIR
-end
+task :all => [:cute, :compile, :link]
 
 task :cute => [LIB_DIR, INCLUDE_DIR] do
   unless Dir.exist?(CUTE_DIR)
@@ -110,10 +91,10 @@ task :cute => [LIB_DIR, INCLUDE_DIR] do
   ln_sf Dir["#{CUTE_DIR}/build/cute.framework"], LIB_DIR
   ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/*.a"], LIB_DIR
   ln_sf Dir["#{CUTE_DIR}/build/_deps/spirv_cross-build/*.a"], LIB_DIR
-  ln_sf Dir["#{CUTE_DIR}/include/*"], INCLUDE_DIR
-  ln_sf Dir["#{CUTE_DIR}/libraries/*"], INCLUDE_DIR
-  ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include/*"], INCLUDE_DIR
-  ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include-config-release/SDL3/*"], INCLUDE_DIR + "/SDL3"
+  # ln_sf Dir["#{CUTE_DIR}/include/*"], INCLUDE_DIR
+  # ln_sf Dir["#{CUTE_DIR}/libraries/*"], INCLUDE_DIR
+  # ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include/*"], INCLUDE_DIR
+  # ln_sf Dir["#{CUTE_DIR}/build/_deps/sdl3-build/include-config-release/SDL3/*"], INCLUDE_DIR + "/SDL3"
 end
 
 # Compile task

@@ -1,3 +1,5 @@
+#include "cf.h"
+#include "sprite.h"
 #include <cute.h>
 #include <mruby.h>
 #include <mruby/compile.h>
@@ -10,6 +12,7 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Error: Could not initialize MRuby\n");
     return 1;
   }
+  mrb_mruby_cf_gem_init(mrb);
 
   // Get data from JSON
   char title[256];
