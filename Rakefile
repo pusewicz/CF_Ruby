@@ -1,4 +1,5 @@
 require 'rake/clean'
+require 'json'
 
 # Project configuration
 PROJECT_NAME = "cf_ruby"
@@ -55,6 +56,7 @@ LIBS = %W[
 # Source and object files
 SRC_FILES = FileList["#{SRC_DIR}/**/*.c"]
 OBJ_FILES = SRC_FILES.pathmap("#{BUILD_DIR}/%n.o")
+COMPILE_COMMANDS_FILE = File.join(BUILD_DIR, "compile_commands.json")
 
 # Clean task
 CLEAN.include(BUILD_DIR)
@@ -99,7 +101,7 @@ task :cute => [LIB_DIR, INCLUDE_DIR] do
   Dir.chdir(CUTE_DIR) do
     unless Dir.exist?("build")
       mkdir_p "build"
-      sh "cmake -GNinja -Bbuild -DCF_FRAMEWORK_BUILD_SAMPLES=OFF -DCF_FRAMEWORK_BUILD_TESTS=OFF"
+      sh "cmake -GNinja -Bbuild -DCF_FRAMEWORK_BUILD_SAMPLES=OFF -DCF_FRAMEWORK_BUILD_TESTS=OFF -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
     end
     sh "cmake --build build"
   end
@@ -117,10 +119,19 @@ end
 # Compile task
 rule '.o' => [->(f){source_for_object(f)}] do |t|
   mkdir_p File.dirname(t.name)
-  sh "#{CC} #{CFLAGS.join(' ')} -c #{t.source} -o #{t.name}"
+  o_json = t.name.pathmap("#{BUILD_DIR}/%f.json")
+  sh "#{CC} -MJ #{o_json} #{CFLAGS.join(' ')} -c #{t.source} -o #{t.name}"
 end
 
-task :compile => [BUILD_DIR] + OBJ_FILES
+task :compile => [BUILD_DIR] + OBJ_FILES + [COMPILE_COMMANDS_FILE]
+
+file COMPILE_COMMANDS_FILE => [BUILD_DIR] do
+  compile_commands = Dir["#{BUILD_DIR}/**/*.json"].map do |json_file|
+    content = File.read(json_file)[..-3] # Remove the last 2 characters (",\n")
+    JSON.parse(content)
+  end
+  File.write(COMPILE_COMMANDS_FILE, JSON.pretty_generate(compile_commands))
+end
 
 # Link task
 task :link => [BIN_DIR] do
